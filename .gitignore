@@ -1,7 +1,9 @@
-# Solo se versionan el notebook y las figuras
+# Lista blanca: solo se versionan los archivos indicados con !
 /*
 !/.gitignore
 !/README.md
+!/requirements.txt
+!/environment.yml
 !/TFM_código.ipynb
 !/figuras/
 .ipynb_checkpoints/
