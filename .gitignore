@@ -1,0 +1,6 @@
+# Solo se versionan el notebook y las figuras
+/*
+!/.gitignore
+!/TFM_código.ipynb
+!/figuras/
+.ipynb_checkpoints/
