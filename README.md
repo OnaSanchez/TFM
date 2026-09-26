@@ -87,8 +87,6 @@ jupyter notebook TFM_código.ipynb
 También se puede abrir con VS Code (extensión de Jupyter). Las figuras se muestran en el notebook y se guardan en `figuras/`.
 
 
-| H7 | 29/01/2027 | Defensa del TFM |
-
 ## Licencia de los datos
 
 Los datos pertenecen a sus autores y se distribuyen bajo licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Si se reutilizan, deben citarse Fiorini (2016) y Weinstein et al. (2013).
