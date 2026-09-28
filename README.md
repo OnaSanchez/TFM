@@ -68,39 +68,6 @@ Permite subir `data.csv` y `labels.csv` o descargar el dataset directamente de U
 └── environment.yml    # Entorno reproducible (conda)
 ```
 
-## Instalación
-
-Con **conda**:
-
-```bash
-conda env create -f environment.yml
-conda activate tfm
-```
-
-O con **pip** (Python 3.9):
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate          # Windows
-# source .venv/bin/activate     # Linux / macOS
-pip install -r requirements.txt
-```
-
-## Uso
-
-```bash
-jupyter notebook TFM_código.ipynb
-```
-
-Para ejecutar la app en local:
-
-```bash
-streamlit run app/streamlit_app.py
-```
-
-También se puede abrir con VS Code (extensión de Jupyter). Las figuras se muestran en el notebook y se guardan en `figuras/`.
-
-
 ## Licencia de los datos
 
 Los datos pertenecen a sus autores y se distribuyen bajo licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Si se reutilizan, deben citarse Fiorini (2016) y Weinstein et al. (2013).
