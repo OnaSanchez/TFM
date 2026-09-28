@@ -7,4 +7,6 @@
 !/TFM_código.ipynb
 !/TFM_streamlit.ipynb
 !/figuras/
+!/app/
+!/.streamlit/
 .ipynb_checkpoints/

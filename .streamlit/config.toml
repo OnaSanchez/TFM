@@ -1,0 +1,6 @@
+[server]
+# data.csv pesa unos 200 MB
+maxUploadSize = 300
+
+[browser]
+gatherUsageStats = false
