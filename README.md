@@ -27,7 +27,7 @@ El trabajo combina dos partes:
 
 ## Datos
 
-Se utiliza el dataset *Gene expression cancer RNA-Seq* del UCI Machine Learning Repository ([Fiorini, 2016](https://doi.org/10.24432/C5R88H)), con licencia CC BY 4.0. Procede del proyecto TCGA Pan-Cancer ([Weinstein et al., 2013](https://doi.org/10.1038/ng.2764)) y contiene 801 muestras y 20.531 genes.
+Se utiliza el dataset *Gene expression cancer RNA-Seq* del UCI Machine Learning Repository ([Fiorini, 2016](https://doi.org/10.24432/C5R88H)). Procede del proyecto TCGA Pan-Cancer y contiene 801 muestras y 20.531 genes.
 
 | Tipo tumoral | Abreviatura | Muestras |
 |---|---|---|
@@ -36,8 +36,6 @@ Se utiliza el dataset *Gene expression cancer RNA-Seq* del UCI Machine Learning 
 | Adenocarcinoma de pulmón | LUAD | 141 |
 | Adenocarcinoma de próstata | PRAD | 136 |
 | Adenocarcinoma de colon | COAD | 78 |
-
-Las clases no están equilibradas, algo que se tiene en cuenta en la validación.
 
 ## Enfoque y método
 
@@ -53,7 +51,7 @@ Las clases no están equilibradas, algo que se tiene en cuenta en la validación
 
 ## Aplicación web
 
-Primera versión del prototipo, publicada en Streamlit Community Cloud:
+Primera prueba del prototipo, publicada en Streamlit Community Cloud:
 
 **https://tfm-tipos-tumorales.streamlit.app**
 
