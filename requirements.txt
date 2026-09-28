@@ -9,6 +9,9 @@ scikit-learn==1.6.1
 matplotlib==3.8.2
 umap-learn==0.5.12
 
+# Interfaz web
+streamlit==1.50.0
+
 # Notebook
 notebook
 ipykernel==6.31.0

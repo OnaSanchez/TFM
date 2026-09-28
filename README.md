@@ -55,6 +55,7 @@ Las clases no están equilibradas, algo que se tiene en cuenta en la validación
 
 ```
 ├── TFM_código.ipynb   # T2: obtención de los datos, QC y análisis exploratorio (PCA/UMAP)
+├── TFM_streamlit.ipynb  # Primera prueba con Streamlit: carga del dataset
 ├── figuras/           # Figuras generadas por el notebook
 ├── requirements.txt   # Dependencias (pip)
 └── environment.yml    # Entorno reproducible (conda)
