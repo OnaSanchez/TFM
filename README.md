@@ -61,7 +61,6 @@ Permite subir `data.csv` y `labels.csv` o descargar el dataset directamente de U
 
 ```
 ├── TFM_código.ipynb   # T2: obtención de los datos, QC y análisis exploratorio (PCA/UMAP)
-├── TFM_streamlit.ipynb  # Primera prueba con Streamlit: carga del dataset
 ├── app/               # App de Streamlit publicada (streamlit_app.py y sus dependencias)
 ├── .streamlit/        # Configuración de Streamlit (límite de subida de 300 MB)
 ├── figuras/           # Figuras generadas por el notebook
