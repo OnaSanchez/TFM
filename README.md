@@ -51,11 +51,21 @@ Las clases no están equilibradas, algo que se tiene en cuenta en la validación
 | Visualización | PCA (principal) + UMAP (exploratoria) |
 
 
+## Aplicación web
+
+Primera versión del prototipo, publicada en Streamlit Community Cloud:
+
+**https://tfm-tipos-tumorales.streamlit.app**
+
+Permite subir `data.csv` y `labels.csv` o descargar el dataset directamente de UCI, y muestra el número de muestras y genes y el porcentaje de cada tipo tumoral.
+
 ## Estructura del repositorio
 
 ```
 ├── TFM_código.ipynb   # T2: obtención de los datos, QC y análisis exploratorio (PCA/UMAP)
 ├── TFM_streamlit.ipynb  # Primera prueba con Streamlit: carga del dataset
+├── app/               # App de Streamlit publicada (streamlit_app.py y sus dependencias)
+├── .streamlit/        # Configuración de Streamlit (límite de subida de 300 MB)
 ├── figuras/           # Figuras generadas por el notebook
 ├── requirements.txt   # Dependencias (pip)
 └── environment.yml    # Entorno reproducible (conda)
@@ -83,6 +93,12 @@ pip install -r requirements.txt
 
 ```bash
 jupyter notebook TFM_código.ipynb
+```
+
+Para ejecutar la app en local:
+
+```bash
+streamlit run app/streamlit_app.py
 ```
 
 También se puede abrir con VS Code (extensión de Jupyter). Las figuras se muestran en el notebook y se guardan en `figuras/`.

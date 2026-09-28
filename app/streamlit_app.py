@@ -69,6 +69,7 @@ if datos is not None:
         st.subheader("Porcentaje de cada tipo de cáncer")
         conteo = etiquetas["Class"].value_counts()
         porcentaje = (conteo / conteo.sum() * 100).round(1)
-        tabla = pd.DataFrame({"Muestras": conteo, "Porcentaje (%)": porcentaje})
+        # astype(str) para que la tabla muestre 37.5 y no 37.5000
+        tabla = pd.DataFrame({"Muestras": conteo, "Porcentaje (%)": porcentaje.astype(str)})
         st.table(tabla)
         st.bar_chart(porcentaje)
