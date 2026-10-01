@@ -38,7 +38,11 @@ Se utiliza el conjunto de datos *Gene expression cancer RNA-Seq* del UCI Machine
 | Adenocarcinoma de próstata | PRAD | 136 |
 | Adenocarcinoma de colon | COAD | 78 |
 
-Los genes aparecen con identificadores genéricos (`gene_0`, `gene_1`…). Según la ficha de UCI, las variables conservan el orden de la fuente original PANCAN ([Synapse syn4301332](https://www.synapse.org/#!Synapse:syn4301332)). Se verificará si esa correspondencia puede reconstruirse de forma fiable. Mientras no se confirme, no se asignan nombres biológicos a los `gene_X` y la interpretación se limita a la importancia y la estabilidad de las variables.
+Los genes aparecen con identificadores genéricos (`gene_0`, `gene_1`…). Según la ficha de UCI, las variables conservan el orden de la fuente original PANCAN ([Synapse syn4301332](https://www.synapse.org/#!Synapse:syn4301332)). La correspondencia con los genes de TCGA se ha reconstruido y verificado con datos públicos de la misma fuente (TCGA RNASeqV2, Broad GDAC Firehose): con el mismo orden de genes, las 78 muestras COAD de UCI coinciden exactamente con 78 muestras COAD de TCGA. La tabla `gene_X` → símbolo del gen e identificador Entrez está en `resultados/correspondencia_genes.csv` y se genera con:
+
+```bash
+python scripts/correspondencia_genes.py
+```
 
 Los datos humanos son de acceso público y no contienen identificadores personales directos. El proyecto no intenta reidentificar a los participantes y los utiliza solo con fines metodológicos y académicos.
 
@@ -104,12 +108,13 @@ El cuaderno también puede abrirse en Google Colab: si no encuentra el paquete `
 
 ```
 ├── 01_qc_eda.ipynb    # T2: obtención de los datos, control de calidad (QC) y análisis exploratorio
-├── tfm/               # Funciones reutilizables: carga y validación de los datos (datos.py) y QC (qc.py)
+├── tfm/               # Funciones reutilizables: carga y validación (datos.py), QC (qc.py) y correspondencia de genes (genes.py)
+├── scripts/           # Scripts auxiliares (correspondencia gene_X → genes de TCGA)
 ├── tests/             # Pruebas con pytest
 ├── app/               # Aplicación de Streamlit publicada (streamlit_app.py y sus dependencias)
 ├── .streamlit/        # Configuración de Streamlit (límite de subida de 300 MB)
 ├── figuras/           # Figuras generadas por los cuadernos (300 ppp)
-├── resultados/        # Tablas generadas por los cuadernos
+├── resultados/        # Tablas generadas (QC por muestra y correspondencia de genes)
 ├── requirements.txt   # Dependencias (pip)
 └── environment.yml    # Entorno reproducible (conda)
 ```
@@ -125,5 +130,6 @@ Los datos pertenecen a sus autores y se distribuyen bajo licencia [CC BY 4.0](ht
 ## Referencias
 
 - Akter, S., Adesola, R. O., & Basnet, S. (2025). Machine learning approach to identify significant genes and classify cancer types from RNA-seq data. *Global Medical Genetics, 12*(4), 100079. https://doi.org/10.1016/j.gmg.2025.100079
+- Broad Institute TCGA Genome Data Analysis Center. (2016). *Analysis-ready standardized TCGA data from Broad GDAC Firehose 2016_01_28 run* [Conjunto de datos]. Broad Institute of MIT and Harvard. https://doi.org/10.7908/C11G0KM9
 - Fiorini, S. (2016). *Gene expression cancer RNA-Seq* [Conjunto de datos]. UCI Machine Learning Repository. https://doi.org/10.24432/C5R88H
 - Weinstein, J. N., Collisson, E. A., Mills, G. B., Shaw, K. R. M., Ozenberger, B. A., Ellrott, K., Shmulevich, I., Sander, C., Stuart, J. M., & The Cancer Genome Atlas Research Network. (2013). The Cancer Genome Atlas Pan-Cancer analysis project. *Nature Genetics, 45*(10), 1113–1120. https://doi.org/10.1038/ng.2764
