@@ -69,6 +69,7 @@ Prototipo publicado en Streamlit Community Cloud: **https://tfm-tipos-tumorales.
 | Entrada | `data.csv` (muestras × genes, valores numéricos) y `labels.csv` (columna `Class`), con el formato de UCI. También puede usarse directamente el conjunto de datos de UCI. |
 | Comprobaciones | Columna `Class` presente, tipos tumorales conocidos, mismas muestras y en el mismo orden en los dos ficheros, valores numéricos, no negativos y sin faltantes (`tfm/datos.py`). |
 | Resultados | Número de muestras y genes y distribución de los tipos tumorales. Más adelante: exploración (PCA/UMAP), comparación de modelos, explicabilidad y predicción de nuevas muestras. |
+| Funciones obligatorias | El prototipo se considerará terminado cuando integre la exploración de los datos, la comparación de modelos, la explicabilidad y la predicción de nuevas muestras (objetivo específico 5 del plan de trabajo). La generación de informes con un modelo de lenguaje es una extensión opcional. |
 | Cálculo | La validación cruzada anidada no se ejecuta en la aplicación: el análisis se ejecuta en los cuadernos de Jupyter y genera resultados reproducibles (modelo final, resultados de la CV, tablas, valores SHAP y figuras), que la aplicación carga con caché. |
 | Predicción | Las nuevas muestras deberán tener exactamente las mismas variables que espera el modelo y se les aplicará el mismo preprocesamiento que en el entrenamiento. |
 
