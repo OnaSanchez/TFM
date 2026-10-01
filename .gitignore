@@ -4,8 +4,14 @@
 !/README.md
 !/requirements.txt
 !/environment.yml
-!/TFM_código.ipynb
+!/pytest.ini
+!/01_qc_eda.ipynb
+!/tfm/
+!/tests/
 !/figuras/
+!/resultados/
 !/app/
 !/.streamlit/
 .ipynb_checkpoints/
+__pycache__/
+.pytest_cache/

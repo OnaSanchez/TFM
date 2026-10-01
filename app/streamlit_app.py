@@ -1,34 +1,29 @@
-import io
-import tarfile
-import urllib.request
-import zipfile
+import sys
+from pathlib import Path
 
 import streamlit as st
 import pandas as pd
 
-URL_UCI = "https://archive.ics.uci.edu/static/public/401/gene+expression+cancer+rna+seq.zip"
+# El paquete tfm (carga y validación de los datos) está en la raíz del repositorio
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tfm.datos import descargar_uci, validar_datos  # noqa: E402
 
 
-# Descarga el dataset de la web de UCI. Con @st.cache_data solo se descarga la primera vez.
+# Con @st.cache_data el conjunto de datos de UCI solo se descarga la primera vez
 @st.cache_data
-def descargar_uci():
-    with urllib.request.urlopen(URL_UCI) as respuesta:
-        zip_uci = zipfile.ZipFile(io.BytesIO(respuesta.read()))
-    # El zip contiene un .tar.gz con los dos CSV
-    tar_gz = io.BytesIO(zip_uci.read("TCGA-PANCAN-HiSeq-801x20531.tar.gz"))
-    with tarfile.open(fileobj=tar_gz) as tar:
-        datos = pd.read_csv(tar.extractfile("TCGA-PANCAN-HiSeq-801x20531/data.csv"), index_col=0)
-        etiquetas = pd.read_csv(tar.extractfile("TCGA-PANCAN-HiSeq-801x20531/labels.csv"), index_col=0)
-    return datos, etiquetas
+def descargar_uci_cache():
+    return descargar_uci()
 
 
-st.title("Clasificación de tipos tumorales")
-st.write("Dataset *Gene expression cancer RNA-Seq* del "
+st.title("Clasificación de tipos tumorales a partir de la expresión génica")
+st.write("Conjunto de datos *Gene expression cancer RNA-Seq* del "
          "[UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/401/gene+expression+cancer+rna+seq): "
-         "`data.csv` (expresión de los genes) y `labels.csv` (tipo de cáncer de cada muestra).")
-st.caption("Prototipo del TFM de Ona Sánchez Núñez (UOC). No es una herramienta diagnóstica ni clínica.")
+         "`data.csv` (expresión de los genes) y `labels.csv` (tipo tumoral de cada muestra).")
+st.caption("Prototipo del Trabajo Final de Máster de Ona Sánchez Núñez, Máster universitario en "
+           "Bioinformática y Bioestadística (UOC, UB). Uso exclusivamente metodológico y docente: "
+           "no es una herramienta diagnóstica ni clínica.")
 
-opcion = st.radio("¿Qué datos quieres usar?", ["Subir mis ficheros", "Usar el dataset de UCI"])
+opcion = st.radio("¿Qué datos quieres usar?", ["Subir mis ficheros", "Usar el conjunto de datos de UCI"])
 
 datos = None
 etiquetas = None
@@ -48,25 +43,25 @@ if opcion == "Subir mis ficheros":
             st.stop()
 else:
     try:
-        with st.spinner("Descargando el dataset de UCI (unos 70 MB)..."):
-            datos, etiquetas = descargar_uci()
+        with st.spinner("Descargando el conjunto de datos de UCI (unos 70 MB)..."):
+            datos, etiquetas = descargar_uci_cache()
     except Exception:
-        st.error("No se ha podido descargar el dataset de UCI. Prueba más tarde o sube los ficheros.")
+        st.error("No se ha podido descargar el conjunto de datos de UCI. Prueba más tarde o sube los ficheros.")
         st.stop()
 
 if datos is not None:
-    # Comprobaciones básicas
-    if "Class" not in etiquetas.columns:
-        st.error("El fichero de etiquetas no tiene la columna 'Class'.")
-    elif not datos.index.equals(etiquetas.index):
-        st.error("Las muestras de los dos ficheros no coinciden.")
+    # Mismas comprobaciones que en el notebook (tfm/datos.py)
+    problemas = validar_datos(datos, etiquetas)
+    if problemas:
+        for problema in problemas:
+            st.error(problema)
     else:
-        st.success("¡El dataset se ha leído correctamente!")
+        st.success("¡El conjunto de datos se ha leído correctamente!")
 
         st.write("Número de muestras:", datos.shape[0])
         st.write("Número de genes:", datos.shape[1])
 
-        st.subheader("Porcentaje de cada tipo de cáncer")
+        st.subheader("Porcentaje de cada tipo tumoral")
         conteo = etiquetas["Class"].value_counts()
         porcentaje = (conteo / conteo.sum() * 100).round(1)
         # astype(str) para que la tabla muestre 37.5 y no 37.5000
