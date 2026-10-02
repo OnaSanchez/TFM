@@ -1,6 +1,6 @@
 """Carga y validación del conjunto de datos «Gene expression cancer RNA-Seq» (UCI).
 
-Lo usan el notebook de análisis (01_qc_eda.ipynb) y la aplicación de Streamlit,
+Lo usan el notebook de análisis (qc_eda/01_qc_eda.ipynb) y la aplicación de Streamlit,
 para que los dos lean y comprueben los datos exactamente igual.
 """
 import io

@@ -38,10 +38,10 @@ Se utiliza el conjunto de datos *Gene expression cancer RNA-Seq* del UCI Machine
 | Adenocarcinoma de próstata | PRAD | 136 |
 | Adenocarcinoma de colon | COAD | 78 |
 
-Los genes aparecen con identificadores genéricos (`gene_0`, `gene_1`…). Según la ficha de UCI, las variables conservan el orden de la fuente original PANCAN ([Synapse syn4301332](https://www.synapse.org/#!Synapse:syn4301332)). La correspondencia con los genes de TCGA se ha reconstruido y verificado con datos públicos de la misma fuente (TCGA RNASeqV2, Broad GDAC Firehose): con el mismo orden de genes, las 78 muestras COAD de UCI coinciden exactamente con 78 muestras COAD de TCGA. La tabla `gene_X` → símbolo del gen e identificador Entrez está en `resultados/correspondencia_genes.csv` y se genera con:
+Los genes aparecen con identificadores genéricos (`gene_0`, `gene_1`…). Según la ficha de UCI, las variables conservan el orden de la fuente original PANCAN ([Synapse syn4301332](https://www.synapse.org/#!Synapse:syn4301332)). La correspondencia con los genes de TCGA se ha reconstruido y verificado con datos públicos de la misma fuente (TCGA RNASeqV2, Broad GDAC Firehose): con el mismo orden de genes, las 78 muestras COAD de UCI coinciden exactamente con 78 muestras COAD de TCGA. La tabla `gene_X` → símbolo del gen e identificador Entrez está en `correspondencia_genes/resultados/correspondencia_genes.csv` y se genera con:
 
 ```bash
-python scripts/correspondencia_genes.py
+python correspondencia_genes/correspondencia_genes.py
 ```
 
 Los datos humanos son de acceso público y no contienen identificadores personales directos. El proyecto no intenta reidentificar a los participantes y los utiliza solo con fines metodológicos y académicos.
@@ -97,9 +97,10 @@ pip install -r requirements.txt
 Después, desde la raíz del repositorio:
 
 ```bash
-jupyter notebook 01_qc_eda.ipynb          # análisis: descarga los datos en Dataset/ la primera vez
-streamlit run app/streamlit_app.py        # aplicación en local
-pytest                                    # pruebas de la carga, la validación y el control de calidad (Quality Control, QC)
+jupyter notebook qc_eda/01_qc_eda.ipynb                # análisis: descarga los datos en Dataset/ la primera vez
+python correspondencia_genes/correspondencia_genes.py   # correspondencia gene_X → genes de TCGA
+streamlit run app/streamlit_app.py                      # aplicación en local
+pytest                                                  # pruebas de la carga, la validación, el control de calidad (Quality Control, QC) y la correspondencia de genes
 ```
 
 El cuaderno también puede abrirse en Google Colab: si no encuentra el paquete `tfm`, descarga este repositorio automáticamente.
@@ -107,17 +108,27 @@ El cuaderno también puede abrirse en Google Colab: si no encuentra el paquete `
 ## Estructura del repositorio
 
 ```
-├── 01_qc_eda.ipynb    # T2: obtención de los datos, control de calidad (QC) y análisis exploratorio
-├── tfm/               # Funciones reutilizables: carga y validación (datos.py), QC (qc.py) y correspondencia de genes (genes.py)
-├── scripts/           # Scripts auxiliares (correspondencia gene_X → genes de TCGA)
-├── tests/             # Pruebas con pytest
-├── app/               # Aplicación de Streamlit publicada (streamlit_app.py y sus dependencias)
-├── .streamlit/        # Configuración de Streamlit (límite de subida de 300 MB)
-├── figuras/           # Figuras generadas por los cuadernos (300 ppp)
-├── resultados/        # Tablas generadas (QC por muestra y correspondencia de genes)
-├── requirements.txt   # Dependencias (pip)
-└── environment.yml    # Entorno reproducible (conda)
+├── app/                        # Aplicación de Streamlit
+│   ├── streamlit_app.py        #   aplicación publicada en Streamlit Community Cloud
+│   └── requirements.txt        #   dependencias que instala Streamlit Community Cloud
+├── .streamlit/config.toml      # Configuración de Streamlit (límite de subida de 300 MB); tiene que estar en la raíz
+├── qc_eda/                     # T2: obtención de los datos, QC y análisis exploratorio
+│   ├── 01_qc_eda.ipynb         #   cuaderno del análisis
+│   ├── figuras/                #   figuras generadas (300 ppp)
+│   └── resultados/             #   QC por muestra (qc_muestras.csv)
+├── correspondencia_genes/      # Correspondencia gene_X → genes de TCGA (riesgo R3 de la PEC1)
+│   ├── correspondencia_genes.py  # descarga TCGA COAD de Firehose, verifica y genera la tabla
+│   └── resultados/             #   tabla gene_X → símbolo e identificador Entrez
+├── tfm/                        # Funciones compartidas por el cuaderno, el script y la aplicación
+│   ├── datos.py                #   carga y validación de los datos
+│   ├── qc.py                   #   QC
+│   └── genes.py                #   correspondencia de genes
+├── tests/                      # Pruebas con pytest (test_datos.py, test_qc.py y test_genes.py)
+├── requirements.txt            # Dependencias (pip)
+└── environment.yml             # Entorno reproducible (conda)
 ```
+
+Los datos de UCI y de TCGA se descargan en `Dataset/`, en la raíz del repositorio, y no se suben a GitHub.
 
 ## Reproducibilidad
 

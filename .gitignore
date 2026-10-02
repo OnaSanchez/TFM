@@ -5,12 +5,10 @@
 !/requirements.txt
 !/environment.yml
 !/pytest.ini
-!/01_qc_eda.ipynb
 !/tfm/
 !/tests/
-!/scripts/
-!/figuras/
-!/resultados/
+!/qc_eda/
+!/correspondencia_genes/
 !/app/
 !/.streamlit/
 .ipynb_checkpoints/
