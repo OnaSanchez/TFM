@@ -9,6 +9,7 @@
 !/tests/
 !/qc_eda/
 !/correspondencia_genes/
+!/modelado/
 !/app/
 !/.streamlit/
 .ipynb_checkpoints/

@@ -8,6 +8,7 @@ dependencies:
   - pandas=2.1.4
   - scipy=1.11.4
   - scikit-learn=1.6.1
+  - xgboost=2.1.4
   # Visualización y reducción de dimensionalidad
   - matplotlib=3.8.2
   - umap-learn=0.5.12

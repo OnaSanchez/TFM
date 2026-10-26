@@ -74,10 +74,25 @@ Prototipo publicado en Streamlit Community Cloud: **https://tfm-tipos-tumorales.
 | Comprobaciones | Columna `Class` presente, tipos tumorales conocidos, mismas muestras y en el mismo orden en los dos ficheros, valores numéricos, no negativos y sin faltantes (`tfm/datos.py`). |
 | Resultados | Número de muestras y genes y distribución de los tipos tumorales. Más adelante: exploración (PCA/UMAP), comparación de modelos, explicabilidad y predicción de nuevas muestras. |
 | Funciones obligatorias | El prototipo se considerará terminado cuando integre la exploración de los datos, la comparación de modelos, la explicabilidad y la predicción de nuevas muestras (objetivo específico 5 del plan de trabajo). La generación de informes con un modelo de lenguaje es una extensión opcional. |
-| Cálculo | La validación cruzada anidada no se ejecuta en la aplicación: el análisis se ejecuta en los cuadernos de Jupyter y genera resultados reproducibles (modelo final, resultados de la CV, tablas, valores SHAP y figuras), que la aplicación carga con caché. |
+| Cálculo | La validación cruzada anidada no se ejecutará en la aplicación: el análisis se ejecuta en los cuadernos de Jupyter y genera resultados reproducibles (modelo final, resultados de la CV, tablas, valores SHAP y figuras), que la aplicación cargará con caché. |
 | Predicción | Las nuevas muestras deberán tener exactamente las mismas variables que espera el modelo y se les aplicará el mismo preprocesamiento que en el entrenamiento. |
 
 Estado actual: carga y validación de los datos y resumen de las clases.
+
+## Resultados de la comparación de modelos
+
+Resultados del cuaderno `modelado/02_modelado.ipynb` (CV anidada con 5 particiones externas y 3 internas; predicciones out-of-fold de las 801 muestras; IC 95 % por bootstrap estratificado):
+
+| Modelo | F1 macro [IC 95 %] | Errores | Genes (mediana) |
+|---|---|---|---|
+| Regresión logística multinomial penalizada | 0,999 [0,997–1,000] | 1 | 200 |
+| SVM lineal | 1,000 [1,000–1,000] | 0 | 200 |
+| Bosque aleatorio (RF) | 0,996 [0,992–0,999] | 4 | 1.000 |
+| XGBoost | 0,996 [0,990–1,000] | 3 | 200 |
+
+- Los cuatro modelos rinden casi igual y sus intervalos se solapan. La exactitud de la SVM lineal es ≥ 0,995 con un 95 % de confianza, según el intervalo exacto de Clopper-Pearson.
+- Solo 6 muestras se clasifican mal con algún modelo; las dos que fallan más son muestras LUAD situadas junto a un grupo de BRCA con perfil basal.
+- La explicabilidad (importancia por permutación, SHAP y estabilidad), la elección del modelo final y la exportación de resultados para la aplicación se harán en la siguiente fase.
 
 ## Instalación y uso
 
@@ -97,13 +112,14 @@ pip install -r requirements.txt
 Después, desde la raíz del repositorio:
 
 ```bash
-jupyter notebook qc_eda/01_qc_eda.ipynb                # análisis: descarga los datos en Dataset/ la primera vez
+jupyter notebook qc_eda/01_qc_eda.ipynb                # QC y análisis exploratorio: descarga los datos en Dataset/ la primera vez
 python correspondencia_genes/correspondencia_genes.py   # correspondencia gene_X → genes de TCGA
+jupyter notebook modelado/02_modelado.ipynb             # CV anidada, comparación de modelos y análisis de errores
 streamlit run app/streamlit_app.py                      # aplicación en local
-pytest                                                  # pruebas de la carga, la validación, el control de calidad (Quality Control, QC) y la correspondencia de genes
+pytest                                                  # pruebas de la carga, la validación, el control de calidad (Quality Control, QC), la correspondencia de genes, los modelos y las métricas
 ```
 
-El cuaderno también puede abrirse en Google Colab: si no encuentra el paquete `tfm`, descarga este repositorio automáticamente.
+`modelado/02_modelado.ipynb` se genera con `python modelado/construir_notebook.py` (las celdas están en ese script) y tarda unos minutos con 12 núcleos. Los cuadernos también pueden abrirse en Google Colab: si no encuentran el paquete `tfm`, descargan este repositorio automáticamente.
 
 ## Estructura del repositorio
 
@@ -119,11 +135,18 @@ El cuaderno también puede abrirse en Google Colab: si no encuentra el paquete `
 ├── correspondencia_genes/      # Correspondencia gene_X → genes de TCGA (riesgo R3 de la PEC1)
 │   ├── correspondencia_genes.py  # descarga TCGA COAD de Firehose, verifica y genera la tabla
 │   └── resultados/             #   tabla gene_X → símbolo e identificador Entrez
-├── tfm/                        # Funciones compartidas por el cuaderno, el script y la aplicación
+├── modelado/                   # T3: preprocesamiento, CV anidada y comparación de modelos
+│   ├── 02_modelado.ipynb       #   cuaderno del modelado (bloques 4 a 8)
+│   ├── construir_notebook.py   #   genera el cuaderno a partir de sus celdas
+│   ├── figuras/                #   figuras generadas (300 ppp)
+│   └── resultados/             #   particiones, hiperparámetros, predicciones out-of-fold, métricas y errores
+├── tfm/                        # Funciones compartidas por los cuadernos, el script y la aplicación
 │   ├── datos.py                #   carga y validación de los datos
 │   ├── qc.py                   #   QC
-│   └── genes.py                #   correspondencia de genes
-├── tests/                      # Pruebas con pytest (test_datos.py, test_qc.py y test_genes.py)
+│   ├── genes.py                #   correspondencia de genes
+│   ├── modelos.py              #   flujos de los modelos y CV anidada
+│   └── metricas.py             #   métricas e intervalos de confianza (bootstrap estratificado y exacto)
+├── tests/                      # Pruebas con pytest (datos, QC, genes, modelos y métricas)
 ├── requirements.txt            # Dependencias (pip)
 └── environment.yml             # Entorno reproducible (conda)
 ```
