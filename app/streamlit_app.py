@@ -29,10 +29,6 @@ def leer(ruta):
 
 st.sidebar.title("Tipos tumorales")
 pagina = st.sidebar.radio("Sección", ["Datos", "Exploración", "Comparación de modelos"])
-st.sidebar.caption("La explicabilidad y la predicción de nuevas muestras se añadirán más adelante.")
-st.sidebar.caption("Prototipo del Trabajo Final de Máster de Ona Sánchez Núñez, Máster universitario en "
-                   "Bioinformática y Bioestadística (UOC, UB). Uso exclusivamente metodológico y docente: "
-                   "no es una herramienta diagnóstica ni clínica.")
 
 # ---------------------------------------------------------------------------------------------------
 if pagina == "Datos":
