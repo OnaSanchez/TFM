@@ -72,12 +72,12 @@ Prototipo publicado en Streamlit Community Cloud: **https://tfm-tipos-tumorales.
 | Usuario previsto | Estudiantes y personal docente o investigador que quieran explorar el problema y los modelos. No es para uso clínico. |
 | Entrada | `data.csv` (muestras × genes, valores numéricos) y `labels.csv` (columna `Class`), con el formato de UCI. También puede usarse directamente el conjunto de datos de UCI. |
 | Comprobaciones | Columna `Class` presente, tipos tumorales conocidos, mismas muestras y en el mismo orden en los dos ficheros, valores numéricos, no negativos y sin faltantes (`tfm/datos.py`). |
-| Resultados | Número de muestras y genes y distribución de los tipos tumorales. Más adelante: exploración (PCA/UMAP), comparación de modelos, explicabilidad y predicción de nuevas muestras. |
+| Resultados | Datos: número de muestras y genes y distribución de los tipos tumorales. Exploración: PCA y UMAP, coloreados por tipo tumoral, muestras atípicas o muestras mal clasificadas. Comparación de modelos: métricas con intervalos de confianza, F1 por clase, matriz de confusión, hiperparámetros y muestras mal clasificadas. Más adelante: explicabilidad y predicción de nuevas muestras. |
 | Funciones obligatorias | El prototipo se considerará terminado cuando integre la exploración de los datos, la comparación de modelos, la explicabilidad y la predicción de nuevas muestras (objetivo específico 5 del plan de trabajo). La generación de informes con un modelo de lenguaje es una extensión opcional. |
-| Cálculo | La validación cruzada anidada no se ejecutará en la aplicación: el análisis se ejecuta en los cuadernos de Jupyter y genera resultados reproducibles (modelo final, resultados de la CV, tablas, valores SHAP y figuras), que la aplicación cargará con caché. |
+| Cálculo | La validación cruzada anidada no se ejecuta en la aplicación: el análisis se ejecuta en los cuadernos de Jupyter, que guardan sus resultados en tablas (`qc_eda/resultados/` y `modelado/resultados/`); la aplicación solo las lee, con caché. |
 | Predicción | Las nuevas muestras deberán tener exactamente las mismas variables que espera el modelo y se les aplicará el mismo preprocesamiento que en el entrenamiento. |
 
-Estado actual: carga y validación de los datos y resumen de las clases.
+Estado actual: secciones de datos, exploración y comparación de modelos. La explicabilidad y la predicción de nuevas muestras se añadirán cuando estén el modelo final y sus resultados.
 
 ## Resultados de la comparación de modelos
 
@@ -109,37 +109,45 @@ O con pip (Python 3.12):
 pip install -r requirements.txt
 ```
 
-Después, desde la raíz del repositorio:
+Después, desde la raíz del repositorio, el análisis se ejecuta en tres pasos, en este orden (cada carpeta tiene un README con lo que hace cada apartado y qué contiene cada fichero de resultados):
+
+| Paso | Carpeta | Qué hace | Bloques del flujo |
+|---|---|---|---|
+| 1 | `qc_eda/` | Obtención de los datos, control de calidad (Quality Control, QC) y análisis exploratorio | 1 a 3 |
+| 2 | `correspondencia_genes/` | Correspondencia `gene_X` → genes de TCGA | — |
+| 3 | `modelado/` | Particiones, preprocesamiento, selección de genes, CV anidada de los cuatro modelos y evaluación | 4 a 8 |
 
 ```bash
-jupyter notebook qc_eda/01_qc_eda.ipynb                # QC y análisis exploratorio: descarga los datos en Dataset/ la primera vez
-python correspondencia_genes/correspondencia_genes.py   # correspondencia gene_X → genes de TCGA
-jupyter notebook modelado/02_modelado.ipynb             # CV anidada, comparación de modelos y análisis de errores
-streamlit run app/streamlit_app.py                      # aplicación en local
-pytest                                                  # pruebas de la carga, la validación, el control de calidad (Quality Control, QC), la correspondencia de genes, los modelos y las métricas
+jupyter notebook qc_eda/01_qc_eda.ipynb                # paso 1: descarga los datos en Dataset/ la primera vez
+python correspondencia_genes/correspondencia_genes.py   # paso 2
+jupyter notebook modelado/02_modelado.ipynb             # paso 3: unos minutos con 12 núcleos
+streamlit run app/streamlit_app.py                      # aplicación en local (lee los resultados de los pasos 1 y 3)
+pytest                                                  # pruebas de la carga, la validación, el QC, la correspondencia de genes, los modelos y las métricas
 ```
 
-`modelado/02_modelado.ipynb` se genera con `python modelado/construir_notebook.py` (las celdas están en ese script) y tarda unos minutos con 12 núcleos. Los cuadernos también pueden abrirse en Google Colab: si no encuentran el paquete `tfm`, descargan este repositorio automáticamente.
+Los cuadernos también pueden abrirse en Google Colab: si no encuentran el paquete `tfm`, descargan este repositorio automáticamente.
 
 ## Estructura del repositorio
 
 ```
-├── app/                        # Aplicación de Streamlit
-│   ├── streamlit_app.py        #   aplicación publicada en Streamlit Community Cloud
-│   └── requirements.txt        #   dependencias que instala Streamlit Community Cloud
-├── .streamlit/config.toml      # Configuración de Streamlit (límite de subida de 300 MB); tiene que estar en la raíz
-├── qc_eda/                     # T2: obtención de los datos, QC y análisis exploratorio
+├── qc_eda/                     # Paso 1 (T2): obtención de los datos, QC y análisis exploratorio
+│   ├── README.md               #   apartados del cuaderno y contenido de cada resultado
 │   ├── 01_qc_eda.ipynb         #   cuaderno del análisis
 │   ├── figuras/                #   figuras generadas (300 ppp)
 │   └── resultados/             #   QC por muestra (qc_muestras.csv)
-├── correspondencia_genes/      # Correspondencia gene_X → genes de TCGA (riesgo R3 de la PEC1)
+├── correspondencia_genes/      # Paso 2: correspondencia gene_X → genes de TCGA (riesgo R3 de la PEC1)
+│   ├── README.md
 │   ├── correspondencia_genes.py  # descarga TCGA COAD de Firehose, verifica y genera la tabla
 │   └── resultados/             #   tabla gene_X → símbolo e identificador Entrez
-├── modelado/                   # T3: preprocesamiento, CV anidada y comparación de modelos
+├── modelado/                   # Paso 3 (T3): preprocesamiento, CV anidada y comparación de modelos
+│   ├── README.md               #   apartados del cuaderno y contenido de cada resultado
 │   ├── 02_modelado.ipynb       #   cuaderno del modelado (bloques 4 a 8)
-│   ├── construir_notebook.py   #   genera el cuaderno a partir de sus celdas
 │   ├── figuras/                #   figuras generadas (300 ppp)
-│   └── resultados/             #   particiones, hiperparámetros, predicciones out-of-fold, métricas y errores
+│   └── resultados/             #   particiones, predicciones, métricas, coordenadas PCA/UMAP y errores
+├── app/                        # Aplicación de Streamlit (lee los resultados de qc_eda/ y modelado/)
+│   ├── streamlit_app.py        #   aplicación publicada en Streamlit Community Cloud
+│   └── requirements.txt        #   dependencias que instala Streamlit Community Cloud
+├── .streamlit/config.toml      # Configuración de Streamlit (límite de subida de 300 MB); tiene que estar en la raíz
 ├── tfm/                        # Funciones compartidas por los cuadernos, el script y la aplicación
 │   ├── datos.py                #   carga y validación de los datos
 │   ├── qc.py                   #   QC
