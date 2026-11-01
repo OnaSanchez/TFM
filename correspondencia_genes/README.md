@@ -14,6 +14,6 @@ python correspondencia_genes/correspondencia_genes.py
 |---|---|
 | `resultados/correspondencia_genes.csv` | `gene_uci`, identificador de TCGA (`SÍMBOLO\|Entrez`), símbolo e identificador Entrez |
 
-La confirmación definitiva de esta correspondencia está pendiente de revisar con el tutor, así que los nombres de los genes se usan con prudencia.
+El tutor ha revisado el procedimiento y lo considera una evidencia convincente, así que los nombres de los genes ya pueden usarse en la interpretación. Queda pendiente repetir la comprobación con algunas muestras de otro tipo tumoral.
 
 Siguiente paso: `modelado/`.

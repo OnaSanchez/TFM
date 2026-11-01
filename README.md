@@ -91,7 +91,7 @@ Resultados del cuaderno `modelado/02_modelado.ipynb` (CV anidada con 5 particion
 | XGBoost | 0,996 [0,990–1,000] | 3 | 200 |
 
 - Los cuatro modelos rinden casi igual y sus intervalos se solapan. La exactitud de la SVM lineal es ≥ 0,995 con un 95 % de confianza, según el intervalo exacto de Clopper-Pearson.
-- Solo 6 muestras se clasifican mal con algún modelo; las dos que fallan más son muestras LUAD situadas junto a un grupo de BRCA con perfil basal.
+- Solo 6 muestras se clasifican mal con algún modelo; las dos que fallan más son muestras LUAD situadas, en la UMAP, junto a un pequeño grupo de BRCA cuyo perfil es compatible con el subtipo basal (observación exploratoria).
 - La explicabilidad (importancia por permutación, SHAP y estabilidad), la elección del modelo final y la exportación de resultados para la aplicación se harán en la siguiente fase.
 
 ## Instalación y uso
