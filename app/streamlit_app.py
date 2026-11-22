@@ -283,8 +283,7 @@ elif pagina == "Explicabilidad":
     st.title("Explicabilidad")
     meta = leer_metadatos()
     st.write("Qué genes usan los modelos para clasificar. Los nombres de los genes proceden de la correspondencia "
-             "`gene_X` → genes de TCGA reconstruida y verificada en `correspondencia_genes/`. La interpretación es "
-             "orientativa: que un gen sea importante para el modelo no implica que tenga un papel causal en el tumor.")
+             "`gene_X` → genes de TCGA reconstruida y verificada en `correspondencia_genes/`.")
 
     st.subheader("Importancia de los genes")
     imp = leer(RES_MODELADO / "importancia_genes.csv")
