@@ -1,0 +1,7 @@
+modelo,metrica,con genes X/Y,sin genes X/Y
+SVM lineal,F1 macro,1.0000 [1.0000–1.0000],1.0000 [1.0000–1.0000]
+SVM lineal,Exactitud equilibrada,1.0000 [1.0000–1.0000],1.0000 [1.0000–1.0000]
+SVM lineal,Exactitud,1.0000 [1.0000–1.0000],1.0000 [1.0000–1.0000]
+Regresión logística,F1 macro,0.9990 [0.9969–1.0000],0.9980 [0.9940–1.0000]
+Regresión logística,Exactitud equilibrada,0.9986 [0.9957–1.0000],0.9974 [0.9923–1.0000]
+Regresión logística,Exactitud,0.9988 [0.9963–1.0000],0.9988 [0.9963–1.0000]

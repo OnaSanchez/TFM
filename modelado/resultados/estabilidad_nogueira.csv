@@ -1,0 +1,10 @@
+modelo,seleccion,estabilidad
+LR,Filtro ANOVA (k elegido),0.5069349453954172
+LR,50 genes más importantes,0.5849893071627361
+SVM,Filtro ANOVA (k elegido),0.9409245241257194
+SVM,50 genes más importantes,0.8155508031834383
+RF,Filtro ANOVA (k elegido),0.7045152156534271
+RF,50 genes más importantes,0.5007842390508275
+XGBoost,Filtro ANOVA (k elegido),0.30247438749114397
+XGBoost,50 genes más importantes,0.516823299643572
+LR,Coeficientes distintos de 0,0.6100995661329065

@@ -15,3 +15,11 @@ def test_emparejar_muestras_detecta_coincidencia_exacta():
     uci = pd.DataFrame([[5.0, 5.0, 5.0000001], [9.0, 9.0, 9.0]], index=["u1", "u2"])
     res = emparejar_muestras(uci, tcga)
     assert res["coincide"].tolist() == [True, False]
+
+
+def test_emparejar_muestras_devuelve_la_mejor_y_la_segunda_muestra():
+    tcga = pd.DataFrame([[0.0, 1.0], [5.0, 5.0], [5.0, 6.0]], index=["T1", "T2", "T3"])
+    uci = pd.DataFrame([[5.0, 5.0]], index=["u1"])
+    res = emparejar_muestras(uci, tcga).iloc[0]
+    assert res["muestra_tcga"] == "T2" and res["dif_max_mejor"] == 0
+    assert res["muestra_tcga_segunda"] == "T3" and res["dif_max_segunda"] == 1

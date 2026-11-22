@@ -73,3 +73,42 @@ def validar_datos(datos, etiquetas):
     if datos.isna().any().any():
         problemas.append("Hay valores de expresión faltantes.")
     return problemas
+
+
+MAXIMO_LOG2 = 25  # en escala log2(x + 1) el máximo de UCI es 20,78; valores mayores indican otra escala
+
+
+def validar_nuevas_muestras(datos, genes_esperados):
+    """Validación estricta de las muestras que se quieren clasificar con un modelo final.
+
+    Las muestras tienen que tener exactamente los mismos genes que el conjunto de entrenamiento
+    (mismos identificadores gene_X) y la misma escala, log2(x + 1). Devuelve (datos con las columnas
+    en el orden que espera el modelo, lista de problemas); si hay problemas, los datos son None.
+    """
+    if datos.empty:
+        return None, ["El fichero no contiene muestras."]
+    esperados = list(genes_esperados)
+    faltan = [g for g in esperados if g not in datos.columns]
+    sobran = [g for g in datos.columns if g not in set(esperados)]
+    problemas = []
+    if faltan:
+        problemas.append(f"Faltan {len(faltan)} genes que necesita el modelo (por ejemplo: {', '.join(faltan[:5])}).")
+    if sobran:
+        problemas.append(f"Hay {len(sobran)} columnas que no son genes del modelo (por ejemplo: "
+                         f"{', '.join(map(str, sobran[:5]))}).")
+    if datos.columns.duplicated().any():
+        problemas.append("Hay genes repetidos.")
+    if problemas:
+        return None, problemas
+    datos = datos[esperados]
+    no_numericas = [c for c in datos.columns if not is_numeric_dtype(datos[c])]
+    if no_numericas:
+        return None, [f"Hay {len(no_numericas)} genes con valores no numéricos."]
+    if datos.isna().any().any():
+        problemas.append("Hay valores de expresión faltantes.")
+    if (datos < 0).any().any():
+        problemas.append("Hay valores de expresión negativos.")
+    if datos.max().max() > MAXIMO_LOG2:
+        problemas.append(f"Hay valores mayores que {MAXIMO_LOG2}: los datos no parecen estar en escala "
+                         "log2(x + 1) del RSEM normalizado, como los de entrenamiento.")
+    return (None, problemas) if problemas else (datos, [])

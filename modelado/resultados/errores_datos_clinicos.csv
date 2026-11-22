@@ -1,0 +1,7 @@
+,Tipo,Grupo UMAP,modelos_que_fallan,muestra_tcga,histological_type,pathologic_stage,gender
+sample_61,KIRC,resto,1,TCGA-B0-4699-01A-01R-1277-07,kidney clear cell renal carcinoma,stage iv,male
+sample_129,LUAD,LUAD junto a BRCA pequeño,2,TCGA-91-6847-01A-11R-1949-07,lung adenocarcinoma- not otherwise specified (nos),stage ib,female
+sample_338,PRAD,resto,1,TCGA-ZG-A9N3-01A-11R-A41O-07,prostate adenocarcinoma acinar type,,male
+sample_507,LUAD,resto,1,TCGA-49-AAR9-01A-21R-A41B-07,lung adenocarcinoma- not otherwise specified (nos),stage iib,male
+sample_510,COAD,resto,1,TCGA-AA-A01P-01A-21R-A083-07,colon adenocarcinoma,stage iii,female
+sample_599,LUAD,LUAD junto a BRCA pequeño,2,TCGA-64-5775-01A-01R-1628-07,lung adenocarcinoma- not otherwise specified (nos),stage iiia,male
