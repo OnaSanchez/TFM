@@ -2,6 +2,7 @@ import html
 import json
 import sys
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import joblib
@@ -100,7 +101,7 @@ def informe_html(modelo, meta, resultado, contribuciones, metricas_modelo, orige
     n_genes = f"{len(meta['genes_entrada']):,}".replace(",", ".")
     partes = [f"<html><head><meta charset='utf-8'><title>Informe de predicción</title><style>{estilo}</style></head><body>",
               "<h1>Informe de predicción del tipo tumoral</h1>",
-              f"<p><b>Fecha:</b> {datetime.now():%d/%m/%Y %H:%M} · <b>Modelo:</b> {html.escape(MODELOS[modelo])}"
+              f"<p><b>Fecha:</b> {datetime.now(ZoneInfo('Europe/Madrid')):%d/%m/%Y %H:%M} (hora peninsular española) · <b>Modelo:</b> {html.escape(MODELOS[modelo])}"
               f"{' (modelo final)' if modelo == meta['modelo_final'] else ''} · <b>Muestras:</b> {len(resultado)}"
               f" · <b>Origen:</b> {html.escape(origen)}</p>",
               f"<div class='aviso'>{html.escape(AVISO)}</div>",
@@ -349,6 +350,7 @@ else:
     origen = st.radio("Muestras", ["Subir un CSV", "Ejemplo: una muestra de cada tipo del conjunto de UCI"],
                       horizontal=True)
     nuevas = None
+    tipo_real = None  # solo se conoce en las muestras de ejemplo de UCI
     if origen == "Subir un CSV":
         archivo = st.file_uploader("Muestras (CSV, muestras × genes, con el nombre de la muestra en la primera columna)",
                                    type="csv")
@@ -369,7 +371,7 @@ else:
             st.stop()
         ejemplo = etiquetas.groupby("Class").head(1).index
         nuevas = datos.loc[ejemplo]
-        st.write("Tipo real:", ", ".join(f"{m}: {c}" for m, c in etiquetas.loc[ejemplo, "Class"].items()))
+        tipo_real = etiquetas.loc[ejemplo, "Class"]
 
     if nuevas is not None:
         # Validación estricta (tfm/datos.py): mismos genes, sin faltantes ni negativos y escala log2(x + 1)
@@ -383,6 +385,8 @@ else:
         flujo = cargar_modelo(modelo)
         pred = flujo.predict(nuevas)
         resultado = pd.DataFrame({"Tipo predicho": [CLASES[p] for p in pred]}, index=nuevas.index)
+        if tipo_real is not None:
+            resultado.insert(0, "Tipo real", tipo_real.reindex(nuevas.index))
         if hasattr(flujo, "predict_proba"):
             puntuacion = pd.DataFrame(flujo.predict_proba(nuevas), index=nuevas.index, columns=CLASES)
             st.caption("Probabilidad estimada de cada tipo tumoral.")
