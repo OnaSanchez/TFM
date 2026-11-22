@@ -133,9 +133,8 @@ hay_modelos = (MOD_DIR / "metadatos.json").exists()
 st.sidebar.title("Tipos tumorales")
 pagina = st.sidebar.radio("Sección", ["Datos", "Exploración", "Comparación de modelos", "Explicabilidad",
                                       "Predicción de nuevas muestras"])
-st.sidebar.caption("Prototipo del Trabajo Final de Máster de Ona Sánchez Núñez, Máster universitario en "
-                   "Bioinformática y Bioestadística (UOC, UB). Uso exclusivamente metodológico y docente: "
-                   "no es una herramienta diagnóstica ni clínica.")
+st.sidebar.caption("Prototipo del TFM de Ona Sánchez Núñez, Máster universitario en "
+                   "Bioinformática y Bioestadística (UOC, UB)")
 
 if pagina in ("Explicabilidad", "Predicción de nuevas muestras") and not hay_modelos:
     st.warning("Todavía no hay modelos finales. Ejecuta antes `modelado/02_modelado.ipynb`.")
