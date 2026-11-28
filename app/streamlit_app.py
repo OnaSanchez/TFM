@@ -30,14 +30,18 @@ st.set_page_config(page_title="Tipos tumorales y expresión génica", layout="ce
 
 # Formato acordado con el tutor: títulos, tablas, gráficos y resultados centrados; en las tablas, encabezados
 # y números centrados (los textos largos se alinean a la izquierda con estilo propio en cada tabla)
+# Tablas: zona central más ancha que la de Streamlit por defecto (736 px) y celdas sin saltos de línea, para que
+# los encabezados y los valores no queden comprimidos; si una tabla no cabe, se desplaza horizontalmente
 st.markdown("""
 <style>
+[data-testid="stMainBlockContainer"] { max-width: 1100px; }
 h1, h2, h3 { text-align: center; }
 [data-testid="stCaptionContainer"] { text-align: center; }
-[data-testid="stTable"] { display: flex; justify-content: center; }
-[data-testid="stTable"] table { margin-left: auto; margin-right: auto; }
-[data-testid="stTable"] th, [data-testid="stTable"] td { text-align: center !important; }
-[data-testid="stTable"] tbody th { white-space: nowrap; }[data-testid="stPlotlyChart"], [data-testid="stVegaLiteChart"], [data-testid="stImage"] {
+[data-testid="stTable"] { display: flex; justify-content: safe center; overflow-x: auto; }
+[data-testid="stTable"] table { margin-left: auto; margin-right: auto; width: auto; }
+[data-testid="stTable"] th, [data-testid="stTable"] td {
+    text-align: center !important; white-space: nowrap; padding: 0.45rem 0.9rem; }
+[data-testid="stPlotlyChart"], [data-testid="stVegaLiteChart"], [data-testid="stImage"] {
     display: flex; justify-content: center; }
 [data-testid="stMetric"] { text-align: center; }
 </style>
@@ -80,7 +84,10 @@ def nombre_gen(g):
 def tabla_texto(df, columnas_texto):
     """st.table con las columnas de texto largo alineadas a la izquierda (el resto, centrado)."""
     # !important para que prevalezca sobre el centrado general (la regla de cada celda es más específica)
-    st.table(df.style.set_properties(subset=columnas_texto, **{"text-align": "left !important"}))
+    # Los textos largos sí pueden ocupar varias líneas, con un ancho mínimo para que se lean bien
+    st.table(df.style.set_properties(subset=columnas_texto, **{"text-align": "left !important",
+                                                               "white-space": "normal !important",
+                                                               "min-width": "14rem"}))
 
 
 def barras(datos, x, y, color, titulo_x, altura=None):
@@ -191,7 +198,7 @@ if pagina == "Datos":
             conteo = etiquetas["Class"].value_counts()
             porcentaje = (conteo / conteo.sum() * 100).round(1)
             # astype(str) para que la tabla muestre 37.5 y no 37.5000
-            tabla = pd.DataFrame({"Muestras": conteo, "Porcentaje (%)": porcentaje.astype(str)})
+            tabla = pd.DataFrame({"Muestras": conteo, "Porcentaje (%)": porcentaje.astype(str)}).rename_axis("Tipo tumoral")
             st.table(tabla)
             st.bar_chart(porcentaje)
 
@@ -233,19 +240,21 @@ elif pagina == "Comparación de modelos":
     metricas = leer(RES_MODELADO / "metricas_globales_ic95.csv")
     metricas["valor"] = [f"{f.estimacion:.3f} [{f.ic_inferior:.3f}–{f.ic_superior:.3f}]" for f in metricas.itertuples()]
     tabla = metricas.pivot(index="modelo", columns="metrica", values="valor")
-    tabla = tabla.reindex(index=list(MODELOS), columns=metricas["metrica"].unique()).rename(index=MODELOS)
+    tabla = (tabla.reindex(index=list(MODELOS), columns=metricas["metrica"].unique()).rename(index=MODELOS)
+             .rename_axis(index="Modelo", columns=None))
     st.subheader("Métricas globales")
     st.table(tabla)
 
     st.subheader("Errores e intervalo exacto de la exactitud")
     st.write("Cuando un modelo no comete errores, el bootstrap da un intervalo [1–1]; el intervalo exacto de "
              "Clopper-Pearson indica que la exactitud real podría ser algo menor.")
-    st.table(leer(RES_MODELADO / "exactitud_ic_exacto.csv").set_index("modelo").round(4))
+    st.table(leer(RES_MODELADO / "exactitud_ic_exacto.csv").set_index("modelo").rename_axis("Modelo")
+             .rename(columns={"errores": "Errores", "exactitud": "Exactitud"}).round(4))
 
     st.subheader("F1 de cada tipo tumoral")
     por_clase = leer(RES_MODELADO / "metricas_por_clase.csv")
     st.table(por_clase.pivot(index="clase", columns="modelo", values="f1")[list(MODELOS)]
-             .rename(columns=MODELOS).round(3))
+             .rename(columns=MODELOS).rename_axis(index="Tipo tumoral", columns=None).round(3))
 
     if (RES_MODELADO / "comparacion_modelos.csv").exists():
         st.subheader("Elección del modelo final")
@@ -253,7 +262,7 @@ elif pagina == "Comparación de modelos":
                  "candidatos a los modelos con un F1 macro a menos de 0,01 del mejor y, entre ellos, prefiere menos "
                  "genes, más estabilidad de los 50 genes principales y menos tiempo de ajuste.")
         comp = leer(RES_MODELADO / "comparacion_modelos.csv").set_index("modelo").sort_values("orden")
-        comp = comp.rename(index=MODELOS).rename(columns={"k mediana": "Genes (mediana)",
+        comp = comp.rename(index=MODELOS).rename_axis("Modelo").rename(columns={"k mediana": "Genes (mediana)",
                                                           "estabilidad top 50": "Estabilidad (50 genes)",
                                                           "tiempo medio (s)": "Tiempo medio (s)",
                                                           "candidato": "Candidato", "orden": "Orden"})
@@ -266,12 +275,15 @@ elif pagina == "Comparación de modelos":
     predicciones = predicciones[predicciones["modelo"] == modelo]
     st.write("Matriz de confusión (filas: clase real; columnas: clase predicha):")
     matriz = pd.crosstab(predicciones["real"], predicciones["pred"]).reindex(index=CLASES, columns=CLASES, fill_value=0)
+    matriz = matriz.rename_axis(index="Clase real", columns=None)
     st.table(matriz)
 
     st.write("Número de genes e hiperparámetros elegidos en cada partición externa:")
     hiper = leer(RES_MODELADO / "hiperparametros_por_particion.csv")
     hiper = hiper[hiper["modelo"] == modelo].dropna(axis=1).drop(columns="modelo")
-    st.table(hiper.set_index("particion").round(4))
+    hiper = hiper.rename(columns={"particion": "Partición", "anova__k": "Genes (k)", "f1_macro_interno": "F1 macro (CV interna)",
+                                  "tiempo_s": "Tiempo (s)"}).rename(columns=lambda c: c.replace("modelo__", ""))
+    st.table(hiper.set_index("Partición").round(4))
 
     st.subheader("Muestras mal clasificadas por algún modelo")
     errores = leer(RES_MODELADO / "analisis_errores.csv").set_index("Unnamed: 0").rename_axis("Muestra")
@@ -322,13 +334,14 @@ elif pagina == "Explicabilidad":
              "siempre los mismos genes y alrededor de 0 si coinciden como al azar.")
     est = leer(RES_MODELADO / "estabilidad_nogueira.csv")
     st.table(est.pivot(index="modelo", columns="seleccion", values="estabilidad").reindex(list(MODELOS))
-             .rename(index=MODELOS).round(3).astype(str).replace("nan", "—"))
+             .rename(index=MODELOS).rename_axis(index="Modelo", columns=None).round(3).astype(str).replace("nan", "—"))
     if (RES_MODELADO / "jaccard_top50_modelos.csv").exists():
         st.write("Coincidencia de los 50 genes más importantes entre modelos (índice de Jaccard):")
         st.table(leer(RES_MODELADO / "jaccard_top50_modelos.csv", index_col=0).round(2))
 
     st.subheader("Posible confusión por sexo")
-    sens = leer(RES_MODELADO / "sensibilidad_sexo.csv").set_index(["modelo", "metrica"])
+    sens = (leer(RES_MODELADO / "sensibilidad_sexo.csv").set_index(["modelo", "metrica"])
+            .rename_axis(["Modelo", "Métrica"]))
     st.write("Rendimiento de los finalistas en la misma validación cruzada anidada con y sin los genes de los "
              "cromosomas X e Y:")
     st.table(sens)
@@ -384,7 +397,7 @@ else:
 
         flujo = cargar_modelo(modelo)
         pred = flujo.predict(nuevas)
-        resultado = pd.DataFrame({"Tipo predicho": [CLASES[p] for p in pred]}, index=nuevas.index)
+        resultado = pd.DataFrame({"Tipo predicho": [CLASES[p] for p in pred]}, index=nuevas.index).rename_axis("Muestra")
         if tipo_real is not None:
             resultado.insert(0, "Tipo real", tipo_real.reindex(nuevas.index))
         if hasattr(flujo, "predict_proba"):
